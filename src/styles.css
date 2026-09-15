@@ -1,0 +1,613 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+/*
+ * StudySpark OS — Design System & Theme Engine
+ * Two complete visual directions: Aurora Library and Heritage Studio.
+ * Strictly uses design tokens for seamless dynamic theme swapping without reload.
+ */
+
+@theme inline {
+  --font-display: var(--font-sans-stack);
+  --font-body: var(--font-sans-stack);
+  --font-mono: var(--font-mono-stack);
+  --font-serif: var(--font-serif-stack);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-amber: var(--amber);
+  --color-rose: var(--rose);
+  --color-border: var(--border);
+  --color-border-2: var(--border-2);
+
+  /* shadcn compatibility */
+  --color-card: var(--surface);
+  --color-card-foreground: var(--foreground);
+  --color-popover: var(--surface-2);
+  --color-popover-foreground: var(--foreground);
+  --color-primary: var(--accent);
+  --color-primary-foreground: var(--accent-foreground);
+  --color-secondary: var(--surface-2);
+  --color-secondary-foreground: var(--foreground);
+  --color-muted-foreground: var(--muted);
+  --color-destructive: var(--rose);
+  --color-destructive-foreground: var(--accent-foreground);
+  --color-input: var(--border-2);
+  --color-ring: var(--accent);
+  --color-ring-offset-background: var(--background);
+  --color-sidebar: var(--surface);
+  --color-sidebar-foreground: var(--foreground);
+  --color-sidebar-primary: var(--accent);
+  --color-sidebar-primary-foreground: var(--accent-foreground);
+  --color-sidebar-accent: var(--surface-2);
+  --color-sidebar-accent-foreground: var(--foreground);
+  --color-sidebar-border: var(--border);
+  --color-sidebar-ring: var(--accent);
+}
+
+:root,
+[data-theme="aurora"] {
+  --radius: 1rem;
+  --font-sans-stack:
+    "DM Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif-stack: "Fraunces", Georgia, serif;
+  --font-mono-stack: "DM Mono", ui-monospace, monospace;
+
+  --background: #0a1c27;
+  --surface: #102d3b;
+  --surface-2: #173c4c;
+  --surface-3: #205466;
+  --foreground: #f4fffe;
+  --muted: #b8d0d3;
+  --faint: #7d9ba1;
+  --accent: #7ce0d3;
+  --accent-foreground: #102d3b;
+  --amber: #e7c46a;
+  --rose: #ef8c78;
+  --border: rgb(213 255 250 / 0.12);
+  --border-2: rgb(213 255 250 / 0.22);
+}
+
+[data-theme="heritage"] {
+  --radius: 0.75rem;
+  --font-sans-stack:
+    "DM Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif-stack: "Fraunces", Georgia, serif;
+  --font-mono-stack: "DM Mono", ui-monospace, monospace;
+
+  --background: #f7f2e9;
+  --surface: #fcfaf6;
+  --surface-2: #f0e7d7;
+  --surface-3: #e5d6bd;
+  --foreground: #29382e;
+  --muted: #5d695d;
+  --faint: #8d8779;
+  --accent: #c4653e;
+  --accent-foreground: #fcfaf6;
+  --amber: #e7a653;
+  --rose: #b94e4e;
+  --border: rgb(41 56 46 / 0.14);
+  --border-2: rgb(41 56 46 / 0.23);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+
+  [data-theme="heritage"] {
+    color-scheme: light;
+  }
+
+  body {
+    background:
+      radial-gradient(circle at 85% -10%, color-mix(in oklab, var(--accent) 18%, transparent), transparent 30rem),
+      radial-gradient(circle at -5% 60%, color-mix(in oklab, var(--amber) 12%, transparent), transparent 28rem),
+      var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans-stack);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    min-height: 100vh;
+    transition: background-color 300ms ease, color 300ms ease;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--accent) 30%, transparent);
+    color: var(--foreground);
+  }
+
+  /* Custom subtle scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-2);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--muted);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseGlow {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes drift {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  50% { transform: translate3d(0, -12px, 0) rotate(1deg); }
+}
+
+@utility rise {
+  animation: rise 600ms cubic-bezier(0.2, 0.7, 0, 1) both;
+}
+
+@utility ring-anim {
+  transition: stroke-dashoffset 1s cubic-bezier(0.2, 0.7, 0, 1);
+}
+
+@utility panel {
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--border);
+  background: linear-gradient(145deg, color-mix(in oklab, var(--surface) 92%, transparent), color-mix(in oklab, var(--surface-2) 72%, transparent));
+  backdrop-filter: blur(18px);
+  box-shadow: 0 18px 45px -35px color-mix(in oklab, var(--foreground) 60%, transparent);
+}
+
+@utility glass-card {
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-2);
+  background: linear-gradient(145deg, color-mix(in oklab, var(--surface) 88%, transparent), color-mix(in oklab, var(--surface-2) 72%, transparent));
+  backdrop-filter: blur(18px);
+  box-shadow: 0 20px 45px -35px color-mix(in oklab, var(--foreground) 70%, transparent);
+}
+
+@utility glow-accent {
+  box-shadow: 0 0 25px -4px color-mix(in oklab, var(--accent) 30%, transparent);
+}
+
+@utility glow-border {
+  border-color: color-mix(in oklab, var(--accent) 40%, var(--border-2));
+}
+
+/* A token bridge keeps the older feature screens visually unified while their
+   functionality remains completely independent of the visual refresh. */
+html[data-theme] .bg-white,
+html[data-theme] .bg-\[\#131924\],
+html[data-theme] .bg-\[\#131927\],
+html[data-theme] .bg-\[\#161f2e\],
+html[data-theme] .bg-\[\#161d2a\],
+html[data-theme] .bg-\[\#1c2638\],
+html[data-theme] .bg-\[\#101726\],
+html[data-theme] .bg-\[\#0d111c\] {
+  background-color: var(--surface) !important;
+}
+
+html[data-theme] .border-slate-800,
+html[data-theme] .border-slate-800\/80,
+html[data-theme] .border-slate-700,
+html[data-theme] .border-slate-700\/80,
+html[data-theme] .border-slate-200,
+html[data-theme] .border-slate-200\/80 {
+  border-color: var(--border) !important;
+}
+
+html[data-theme] .text-slate-100,
+html[data-theme] .text-slate-200,
+html[data-theme] .text-zinc-200 {
+  color: var(--foreground) !important;
+}
+
+html[data-theme] .text-slate-300,
+html[data-theme] .text-slate-400,
+html[data-theme] .text-zinc-300,
+html[data-theme] .text-zinc-400 {
+  color: var(--muted) !important;
+}
+
+html[data-theme] .text-slate-500,
+html[data-theme] .text-zinc-500,
+html[data-theme] .text-zinc-600 {
+  color: var(--faint) !important;
+}
+
+/* Shared interaction language for every screen, dialog, input and card. */
+@layer base {
+  button, a, input, select, textarea {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button:focus-visible, a:focus-visible, input:focus-visible,
+  select:focus-visible, textarea:focus-visible {
+    outline: 2px solid color-mix(in oklab, var(--accent) 75%, white);
+    outline-offset: 3px;
+  }
+
+  input, select, textarea {
+    font-family: var(--font-sans-stack);
+  }
+}
+
+@layer components {
+  .auth-page {
+    isolation: isolate;
+    background:
+      radial-gradient(circle at 12% 18%, color-mix(in oklab, var(--accent) 24%, transparent), transparent 25rem),
+      radial-gradient(circle at 88% 86%, color-mix(in oklab, var(--amber) 20%, transparent), transparent 28rem),
+      var(--background);
+  }
+
+  .auth-page::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: .32;
+    background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(ellipse at center, black, transparent 74%);
+  }
+
+  .auth-card {
+    box-shadow: 0 32px 80px -38px color-mix(in oklab, var(--foreground) 70%, transparent), inset 0 1px 0 color-mix(in oklab, white 20%, transparent);
+  }
+
+  .app-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-2xl);
+    background: linear-gradient(145deg, color-mix(in oklab, var(--surface) 96%, transparent), color-mix(in oklab, var(--surface-2) 75%, transparent));
+    box-shadow: 0 18px 44px -36px color-mix(in oklab, var(--foreground) 72%, transparent);
+  }
+
+  .dashboard-page {
+    position: relative;
+  }
+
+  .dashboard-page::before {
+    content: "";
+    position: absolute;
+    top: -8rem;
+    right: 10%;
+    width: 22rem;
+    height: 22rem;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--accent) 10%, transparent);
+    filter: blur(72px);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .dashboard-hero {
+    border-color: color-mix(in oklab, var(--accent) 38%, var(--border)) !important;
+    background: linear-gradient(135deg, color-mix(in oklab, var(--accent) 16%, var(--surface)), var(--surface) 52%, color-mix(in oklab, var(--amber) 12%, var(--surface-2))) !important;
+    box-shadow: 0 28px 60px -42px color-mix(in oklab, var(--accent) 80%, transparent) !important;
+  }
+
+  .dashboard-metrics {
+    box-shadow: 0 22px 50px -40px color-mix(in oklab, var(--foreground) 85%, transparent) !important;
+  }
+
+  .dashboard-page .text-amber-400 { color: var(--accent) !important; }
+  .dashboard-page .bg-amber-400, .dashboard-page .bg-amber-500 { background-color: var(--accent) !important; }
+  .dashboard-page .border-amber-500\/20, .dashboard-page .border-amber-500\/25, .dashboard-page .border-amber-500\/30, .dashboard-page .border-amber-500\/35 { border-color: color-mix(in oklab, var(--accent) 32%, transparent) !important; }
+  .dashboard-page .from-amber-400, .dashboard-page .to-amber-500 { --tw-gradient-from: var(--accent) var(--tw-gradient-from-position) !important; --tw-gradient-to: color-mix(in oklab, var(--accent) 72%, var(--amber)) var(--tw-gradient-to-position) !important; }
+
+  .app-shell input, .app-shell select, .app-shell textarea {
+    border-color: var(--border) !important;
+    background-color: color-mix(in oklab, var(--surface-2) 72%, transparent) !important;
+    transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+  }
+
+  .app-shell input:focus, .app-shell select:focus, .app-shell textarea:focus {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 16%, transparent) !important;
+  }
+}
+
+/* Aurora is the shared production interface: quiet navy surfaces, deliberate
+   teal hierarchy and one interaction language across the learning tools. */
+[data-theme="aurora"] .app-shell {
+  background:
+    radial-gradient(circle at 76% -8%, rgb(79 196 179 / 0.13), transparent 29rem),
+    radial-gradient(circle at 2% 78%, rgb(52 145 157 / 0.11), transparent 30rem),
+    linear-gradient(135deg, #081923 0%, var(--background) 42%, #0b2430 100%);
+}
+
+[data-theme="aurora"] .app-shell header {
+  background: color-mix(in oklab, var(--background) 82%, transparent) !important;
+  border-color: rgb(178 242 235 / 0.1) !important;
+}
+
+[data-theme="aurora"] .app-shell aside {
+  background: linear-gradient(180deg, rgb(16 45 59 / 0.94), rgb(9 29 40 / 0.92)) !important;
+  border-color: rgb(178 242 235 / 0.1) !important;
+}
+
+[data-theme="aurora"] .app-shell .panel,
+[data-theme="aurora"] .app-card,
+[data-theme="aurora"] .dashboard-metrics {
+  border-color: rgb(178 242 235 / 0.12) !important;
+  background: linear-gradient(145deg, rgb(20 55 70 / 0.9), rgb(12 39 52 / 0.82)) !important;
+  box-shadow: 0 18px 46px -35px rgb(0 9 15 / 0.88), inset 0 1px 0 rgb(214 255 250 / 0.05) !important;
+}
+
+[data-theme="aurora"] .app-shell input,
+[data-theme="aurora"] .app-shell select,
+[data-theme="aurora"] .app-shell textarea {
+  min-height: 2.55rem;
+  border-color: rgb(178 242 235 / 0.14) !important;
+  background: rgb(7 27 38 / 0.5) !important;
+  color: var(--foreground) !important;
+}
+
+[data-theme="aurora"] .app-shell input::placeholder,
+[data-theme="aurora"] .app-shell textarea::placeholder {
+  color: color-mix(in oklab, var(--muted) 72%, transparent) !important;
+}
+
+[data-theme="aurora"] .app-shell input:hover,
+[data-theme="aurora"] .app-shell select:hover,
+[data-theme="aurora"] .app-shell textarea:hover {
+  border-color: rgb(124 224 211 / 0.38) !important;
+}
+
+[data-theme="aurora"] .app-shell button:not(:disabled),
+[data-theme="aurora"] .app-shell a {
+  transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease,
+    box-shadow 180ms ease, color 180ms ease;
+}
+
+[data-theme="aurora"] .app-shell button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+[data-theme="aurora"] .app-shell .bg-\[\#6366F1\],
+[data-theme="aurora"] .app-shell .bg-\[\#5558E6\] {
+  background-color: var(--accent) !important;
+}
+
+[data-theme="aurora"] .app-shell .bg-\[\#6366F1\]\/5,
+[data-theme="aurora"] .app-shell .bg-\[\#6366F1\]\/10,
+[data-theme="aurora"] .app-shell .bg-\[\#6366F1\]\/15,
+[data-theme="aurora"] .app-shell .bg-\[\#6366F1\]\/20 {
+  background-color: color-mix(in oklab, var(--accent) 14%, transparent) !important;
+}
+
+[data-theme="aurora"] .app-shell .bg-\[\#6366F1\].text-white,
+[data-theme="aurora"] .app-shell .bg-\[\#5558E6\].text-white {
+  color: var(--accent-foreground) !important;
+}
+
+[data-theme="aurora"] .app-shell .text-\[\#6366F1\],
+[data-theme="aurora"] .app-shell .text-\[\#8183f4\] {
+  color: var(--accent) !important;
+}
+
+[data-theme="aurora"] .app-shell .border-\[\#6366F1\] {
+  border-color: var(--accent) !important;
+}
+
+[data-theme="aurora"] .app-shell .border-\[\#6366F1\]\/20,
+[data-theme="aurora"] .app-shell .border-\[\#6366F1\]\/30 {
+  border-color: color-mix(in oklab, var(--accent) 35%, transparent) !important;
+}
+
+[data-theme="aurora"] .app-shell .hover\:bg-\[\#5558E6\]:hover,
+[data-theme="aurora"] .app-shell .hover\:bg-\[\#6366F1\]\/10:hover {
+  background-color: color-mix(in oklab, var(--accent) 15%, transparent) !important;
+}
+
+[data-theme="aurora"] .app-shell .hover\:border-\[\#6366F1\]\/50:hover {
+  border-color: color-mix(in oklab, var(--accent) 55%, transparent) !important;
+}
+
+/* AI Studio uses the same calm teal signal as the rest of the learning flow. */
+[data-theme="aurora"] .ai-studio .bg-\[\#dca54c\],
+[data-theme="aurora"] .ai-studio .hover\:bg-\[\#e5a842\]:hover {
+  background-color: var(--accent) !important;
+}
+
+[data-theme="aurora"] .ai-studio .text-\[\#dca54c\],
+[data-theme="aurora"] .ai-studio .hover\:text-\[\#dca54c\]:hover {
+  color: var(--accent) !important;
+}
+
+[data-theme="aurora"] .ai-studio .border-\[\#dca54c\],
+[data-theme="aurora"] .ai-studio .hover\:border-\[\#dca54c\]:hover {
+  border-color: var(--accent) !important;
+}
+
+[data-theme="aurora"] .ai-studio .border-\[\#dca54c\]\/40,
+[data-theme="aurora"] .ai-studio .border-\[\#dca54c\]\/30 {
+  border-color: color-mix(in oklab, var(--accent) 38%, transparent) !important;
+}
+
+[data-theme="aurora"] .ai-studio .bg-\[\#dca54c\]\/10,
+[data-theme="aurora"] .ai-studio .bg-\[\#dca54c\]\/15 {
+  background-color: color-mix(in oklab, var(--accent) 13%, transparent) !important;
+}
+
+[data-theme="aurora"] .ai-studio .ring-\[\#dca54c\]\/30,
+[data-theme="aurora"] .ai-studio .ring-\[\#dca54c\]\/40 {
+  --tw-ring-color: color-mix(in oklab, var(--accent) 42%, transparent) !important;
+}
+
+[data-theme="aurora"] .ai-studio .bg-\[\#dca54c\].text-zinc-950,
+[data-theme="aurora"] .ai-studio .hover\:bg-\[\#e5a842\].text-zinc-950 {
+  color: var(--accent-foreground) !important;
+}
+
+[data-theme="aurora"] .ai-studio > .space-y-4 > div,
+[data-theme="aurora"] .ai-studio > .space-y-6 > div {
+  border-color: rgb(178 242 235 / 0.13) !important;
+  box-shadow: 0 18px 46px -38px rgb(0 9 15 / 0.94), inset 0 1px 0 rgb(214 255 250 / 0.045);
+}
+
+[data-theme="aurora"] .ai-studio .group:hover {
+  border-color: color-mix(in oklab, var(--accent) 34%, var(--border)) !important;
+}
+
+@media (min-width: 1024px) {
+  .ai-studio > .space-y-4 {
+    position: sticky;
+    top: 6.5rem;
+    align-self: start;
+  }
+}
+
+/* Content Bank: a compact, connected management workspace.  The hierarchy
+   stays legible, while repeated controls sit close enough to scan as one flow. */
+[data-theme="aurora"] .syllabus-page {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+[data-theme="aurora"] .syllabus-page > * + * {
+  margin-top: 0 !important;
+}
+
+[data-theme="aurora"] .syllabus-page > .grid,
+[data-theme="aurora"] .syllabus-page .grid.gap-6 {
+  gap: 0.8rem;
+}
+
+[data-theme="aurora"] .syllabus-page .panel {
+  border-radius: 0.9rem;
+  padding: 0.8rem;
+  background: linear-gradient(155deg, rgb(17 52 67 / 0.96), rgb(10 37 50 / 0.9)) !important;
+}
+
+[data-theme="aurora"] .syllabus-page .panel > :first-child {
+  min-height: 1.5rem;
+}
+
+[data-theme="aurora"] .syllabus-page h1 {
+  letter-spacing: -0.035em;
+}
+
+[data-theme="aurora"] .syllabus-page button,
+[data-theme="aurora"] .syllabus-page a {
+  min-height: 1.85rem;
+}
+
+[data-theme="aurora"] .syllabus-page input,
+[data-theme="aurora"] .syllabus-page select {
+  min-height: 2rem;
+}
+
+[data-theme="aurora"] .syllabus-page .rounded-2xl {
+  border-radius: 0.9rem;
+}
+
+[data-theme="aurora"] .syllabus-page .space-y-6 > * + * {
+  margin-top: 0.8rem;
+}
+
+[data-theme="aurora"] .syllabus-page .space-y-4 > * + * {
+  margin-top: 0.65rem;
+}
+
+[data-theme="aurora"] .syllabus-page .p-6 {
+  padding: 1rem;
+}
+
+[data-theme="aurora"] .syllabus-page .p-5 {
+  padding: 0.9rem;
+}
+
+[data-theme="aurora"] .syllabus-page .p-4 {
+  padding: 0.75rem;
+}
+
+@media (max-width: 1023px) {
+  [data-theme="aurora"] .syllabus-page {
+    gap: 1rem;
+  }
+
+  [data-theme="aurora"] .syllabus-page .panel {
+    padding: 1rem;
+  }
+}
+
+[data-theme="aurora"] .dashboard-hero {
+  border-color: rgb(124 224 211 / 0.3) !important;
+  background: linear-gradient(120deg, rgb(19 68 80 / 0.94), rgb(13 42 56 / 0.92) 52%, rgb(21 74 77 / 0.78)) !important;
+}
+
+[data-theme="aurora"] .dashboard-page [class*="bg-amber"],
+[data-theme="aurora"] .dashboard-page [class*="from-amber"],
+[data-theme="aurora"] .dashboard-page [class*="to-amber"] {
+  --tw-gradient-from: var(--accent) var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: color-mix(in oklab, var(--accent) 72%, var(--amber)) var(--tw-gradient-to-position) !important;
+}
+
+[data-theme="aurora"] .dashboard-page .text-amber-400,
+[data-theme="aurora"] .dashboard-page .text-amber-300 {
+  color: var(--accent) !important;
+}
+
+@media (max-width: 640px) {
+  .app-shell main > div:last-child {
+    padding-top: 1.25rem;
+    padding-bottom: 2rem;
+  }
+
+  .app-shell header {
+    padding-top: 0.8rem;
+    padding-bottom: 0.8rem;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .auth-card { animation: drift 8s ease-in-out infinite; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}

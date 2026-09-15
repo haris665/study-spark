@@ -1,0 +1,110 @@
+{
+  "entities": {
+    "user": {
+      "title": "User",
+      "description": "User profile and account information",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique user ID matching auth.uid" },
+        "email": { "type": "string", "format": "email", "description": "User email address" },
+        "displayName": { "type": "string", "description": "User display name" },
+        "photoURL": { "type": "string", "description": "User profile avatar URL" },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when the account was registered"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp when the account was last updated"
+        }
+      },
+      "required": ["id", "email", "createdAt"]
+    },
+    "note": {
+      "title": "Note",
+      "description": "Student concept notes and study materials",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique note identifier" },
+        "userId": { "type": "string", "description": "Owner user ID" },
+        "subjectId": { "type": "string", "description": "Associated subject ID" },
+        "title": { "type": "string", "description": "Title of the concept note" },
+        "plainTextContent": {
+          "type": "string",
+          "description": "Markdown or plain text concept body"
+        },
+        "isPinned": { "type": "boolean", "description": "Whether the note is pinned" },
+        "color": { "type": "string", "description": "Color tag" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "description": "Last update timestamp" }
+      },
+      "required": ["id", "userId", "title", "createdAt", "updatedAt"]
+    },
+    "subject": {
+      "title": "Subject",
+      "description": "Syllabus subject or academic topic",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique subject identifier" },
+        "userId": { "type": "string", "description": "Owner user ID" },
+        "name": { "type": "string", "description": "Subject name" },
+        "description": { "type": "string", "description": "Optional description of syllabus" },
+        "color": { "type": "string", "description": "Accent color for subject" },
+        "position": { "type": "number", "description": "Display order index" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["id", "userId", "name", "createdAt"]
+    },
+    "attempt": {
+      "title": "Attempt",
+      "description": "MCQ practice attempt record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique attempt ID" },
+        "userId": { "type": "string", "description": "User ID who attempted the question" },
+        "mcqId": { "type": "string", "description": "Question identifier" },
+        "selectedIndex": { "type": "number", "description": "Option index selected by user" },
+        "isCorrect": { "type": "boolean", "description": "Whether the chosen answer was correct" },
+        "timeSpentSec": { "type": "number", "description": "Seconds spent solving the question" },
+        "createdAt": { "type": "string", "description": "Timestamp when the question was answered" }
+      },
+      "required": ["id", "userId", "mcqId", "selectedIndex", "isCorrect", "createdAt"]
+    },
+    "studySession": {
+      "title": "StudySession",
+      "description": "Tracked study session duration and focus metrics",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique session ID" },
+        "userId": { "type": "string", "description": "User ID" },
+        "durationSec": { "type": "number", "description": "Session duration in seconds" },
+        "focusScore": { "type": "number", "description": "Focus rating or score" },
+        "mode": { "type": "string", "description": "Practice or study mode" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["id", "userId", "durationSec", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/user" },
+      "description": "User profile collection partitioned by user ID"
+    },
+    "/users/{userId}/notes/{noteId}": {
+      "schema": { "$ref": "#/entities/note" },
+      "description": "Student notes subcollection belonging to a specific user"
+    },
+    "/users/{userId}/subjects/{subjectId}": {
+      "schema": { "$ref": "#/entities/subject" },
+      "description": "User custom subjects subcollection"
+    },
+    "/users/{userId}/attempts/{attemptId}": {
+      "schema": { "$ref": "#/entities/attempt" },
+      "description": "User practice attempts subcollection"
+    },
+    "/users/{userId}/studySessions/{sessionId}": {
+      "schema": { "$ref": "#/entities/studySession" },
+      "description": "User study sessions subcollection"
+    }
+  }
+}

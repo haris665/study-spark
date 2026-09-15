@@ -1,0 +1,6 @@
+{
+  "name": "Study Spark",
+  "description": "A comprehensive study and MCQ management system featuring syllabus tracking, chapter sources, practice exams, QR code scanner, and AI question generation.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
