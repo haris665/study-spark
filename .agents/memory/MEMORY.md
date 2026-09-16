@@ -1,0 +1,1 @@
+- [Imported Node dependencies](imported-node-dependencies.md) — zip imports may need executable permissions and platform-native optional packages restored before builds run.

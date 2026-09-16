@@ -124,7 +124,7 @@ export function PremiumMotionLayer() {
       >
         <Suspense fallback={null}>
           <Lottie
-            animationData={studyPulseAnimation}
+            src={studyPulseAnimation}
             loop
             autoplay
             rendererSettings={{ preserveAspectRatio: "xMidYMid slice" }}
