@@ -268,7 +268,8 @@ export async function sendStudyReminderEmail(params: {
   }
 
   if (attemptedProvider) {
-    const message = `${attemptedProvider} was configured but the email could not be sent. ${lastError}`.trim();
+    const message =
+      `${attemptedProvider} was configured but the email could not be sent. ${lastError}`.trim();
     return {
       success: false,
       provider: "failed",

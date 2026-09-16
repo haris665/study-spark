@@ -873,7 +873,9 @@ function Syllabus() {
         {/* Hierarchy Grid or Full-Width Focused View */}
         <div
           className={
-            isFullWidthMode ? "w-full space-y-6" : "grid gap-6 lg:grid-cols-[210px_230px_minmax(0,1fr)]"
+            isFullWidthMode
+              ? "w-full space-y-6"
+              : "grid gap-6 lg:grid-cols-[210px_230px_minmax(0,1fr)]"
           }
         >
           {/* ========================================================================= */}

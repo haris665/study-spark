@@ -1491,63 +1491,69 @@ function NotesPage() {
       </AnimatePresence>
 
       <AnimatePresence>
-        {deleteSubjectConfirmId && (() => {
-          const subject = subjects.find((item) => item.id === deleteSubjectConfirmId);
-          const noteCount = notes.filter((note) => note.subject_id === deleteSubjectConfirmId).length;
-          if (!subject) return null;
-          return (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4 backdrop-blur-xs"
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="delete-subject-title"
-            >
+        {deleteSubjectConfirmId &&
+          (() => {
+            const subject = subjects.find((item) => item.id === deleteSubjectConfirmId);
+            const noteCount = notes.filter(
+              (note) => note.subject_id === deleteSubjectConfirmId,
+            ).length;
+            if (!subject) return null;
+            return (
               <motion.div
-                initial={{ opacity: 0, scale: 0.96, y: 12 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.96, y: 12 }}
-                className="w-full max-w-md rounded-2xl border border-rose/30 bg-surface p-6 shadow-2xl"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4 backdrop-blur-xs"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="delete-subject-title"
               >
-                <div className="flex items-start gap-3">
-                  <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-rose/10 text-rose">
-                    <Trash2 className="size-4" />
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.96, y: 12 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.96, y: 12 }}
+                  className="w-full max-w-md rounded-2xl border border-rose/30 bg-surface p-6 shadow-2xl"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-rose/10 text-rose">
+                      <Trash2 className="size-4" />
+                    </div>
+                    <div>
+                      <h3
+                        id="delete-subject-title"
+                        className="text-base font-semibold text-foreground"
+                      >
+                        Delete {subject.name}?
+                      </h3>
+                      <p className="mt-1 text-xs leading-relaxed text-muted">
+                        {noteCount > 0
+                          ? `${noteCount} note${noteCount === 1 ? "" : "s"} will be kept, but moved out of this subject. Chapters and connected syllabus content may be removed.`
+                          : "This removes the subject and any connected syllabus content."}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 id="delete-subject-title" className="text-base font-semibold text-foreground">
-                      Delete {subject.name}?
-                    </h3>
-                    <p className="mt-1 text-xs leading-relaxed text-muted">
-                      {noteCount > 0
-                        ? `${noteCount} note${noteCount === 1 ? "" : "s"} will be kept, but moved out of this subject. Chapters and connected syllabus content may be removed.`
-                        : "This removes the subject and any connected syllabus content."}
-                    </p>
+                  <div className="mt-5 flex justify-end gap-2 border-t border-border pt-4">
+                    <Btn
+                      variant="ghost"
+                      type="button"
+                      disabled={isDeletingSubject}
+                      onClick={() => setDeleteSubjectConfirmId(null)}
+                    >
+                      Keep subject
+                    </Btn>
+                    <Btn
+                      variant="danger"
+                      type="button"
+                      disabled={isDeletingSubject}
+                      onClick={handleDeleteSubject}
+                    >
+                      {isDeletingSubject ? "Deleting…" : "Delete subject"}
+                    </Btn>
                   </div>
-                </div>
-                <div className="mt-5 flex justify-end gap-2 border-t border-border pt-4">
-                  <Btn
-                    variant="ghost"
-                    type="button"
-                    disabled={isDeletingSubject}
-                    onClick={() => setDeleteSubjectConfirmId(null)}
-                  >
-                    Keep subject
-                  </Btn>
-                  <Btn
-                    variant="danger"
-                    type="button"
-                    disabled={isDeletingSubject}
-                    onClick={handleDeleteSubject}
-                  >
-                    {isDeletingSubject ? "Deleting…" : "Delete subject"}
-                  </Btn>
-                </div>
+                </motion.div>
               </motion.div>
-            </motion.div>
-          );
-        })()}
+            );
+          })()}
       </AnimatePresence>
     </AppShell>
   );

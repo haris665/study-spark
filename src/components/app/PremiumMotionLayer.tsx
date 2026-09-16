@@ -23,7 +23,13 @@ const studyPulseAnimation = {
       sr: 1,
       ks: {
         o: { a: 0, k: 52 },
-        r: { a: 1, k: [{ t: 0, s: [0] }, { t: 90, s: [360] }] },
+        r: {
+          a: 1,
+          k: [
+            { t: 0, s: [0] },
+            { t: 90, s: [360] },
+          ],
+        },
         p: { a: 0, k: [110, 110, 0] },
         a: { a: 0, k: [0, 0, 0] },
         s: { a: 0, k: [100, 100, 100] },
@@ -111,7 +117,10 @@ export function PremiumMotionLayer() {
   }, [reduceMotion]);
 
   return (
-    <div ref={layerRef} className="premium-motion-layer pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+    <div
+      ref={layerRef}
+      className="premium-motion-layer pointer-events-none fixed inset-0 -z-10 overflow-hidden"
+    >
       <div className="premium-motion-drift absolute left-[6%] top-[12%] h-28 w-80 rotate-[-10deg] rounded-2xl bg-emerald-500/8 blur-3xl" />
       <div className="premium-motion-drift absolute right-[8%] top-[18%] h-24 w-72 rotate-[12deg] rounded-2xl bg-amber-500/8 blur-3xl" />
       <div className="premium-motion-drift absolute bottom-[8%] left-[30%] h-28 w-96 rotate-[4deg] rounded-2xl bg-sky-500/7 blur-3xl" />

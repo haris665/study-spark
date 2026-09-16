@@ -79,7 +79,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser>(DEMO_USER);
   const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [syncStatus, setSyncStatus] = useState<SyncStatus>(isSupabaseConfigured ? "guest" : "offline");
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>(
+    isSupabaseConfigured ? "guest" : "offline",
+  );
 
   const applyAccount = (account: SupabaseUser | null) => {
     setSupabaseUser(account);
@@ -137,7 +139,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         },
       },
     });
-    return { user: data.user ?? null, error: error?.message ?? null, redirected: Boolean(data.url) };
+    return {
+      user: data.user ?? null,
+      error: error?.message ?? null,
+      redirected: Boolean(data.url),
+    };
   };
 
   const signInWithEmail = async (email: string, password: string): Promise<AuthResult> => {
@@ -146,7 +152,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { user: data.user ?? null, error: error?.message ?? null };
   };
 
-  const signUpWithEmail = async (email: string, password: string, name?: string): Promise<AuthResult> => {
+  const signUpWithEmail = async (
+    email: string,
+    password: string,
+    name?: string,
+  ): Promise<AuthResult> => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -179,7 +189,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, supabaseUser, loading, syncStatus, retrySync, signInWithGoogle, signInWithEmail, signUpWithEmail, resetPassword, deleteAccount, continueOffline, signOut }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        supabaseUser,
+        loading,
+        syncStatus,
+        retrySync,
+        signInWithGoogle,
+        signInWithEmail,
+        signUpWithEmail,
+        resetPassword,
+        deleteAccount,
+        continueOffline,
+        signOut,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

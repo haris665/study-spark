@@ -111,46 +111,48 @@ export function createLocalQueryBuilder(table: string): LocalQueryBuilder {
     update: (patch: Record<string, unknown>) => {
       const applyUpdate = async (column: string, value: unknown, exclude = false) => {
         if (exclude && table === "study_plan_slots") {
-          const slots = localStore.getPlanSlots().map((slot) =>
-            String((slot as Record<string, unknown>)[column]) !== String(value)
-              ? { ...slot, ...patch }
-              : slot,
-          );
+          const slots = localStore
+            .getPlanSlots()
+            .map((slot) =>
+              String((slot as Record<string, unknown>)[column]) !== String(value)
+                ? { ...slot, ...patch }
+                : slot,
+            );
           localStore.savePlanSlots(slots);
           return { data: slots, error: null };
         }
-          if (column === "id" || column === "user_id") {
-            const id = String(value);
-            if (table === "profiles") {
-              const updated = localStore.updateProfile(patch);
-              return { data: updated, error: null };
-            } else if (table === "subjects") {
-              const updated = localStore.updateSubject(id, patch as never);
-              return { data: updated, error: null };
-            } else if (table === "chapters") {
-              const updated = localStore.updateChapter(id, patch as never);
-              return { data: updated, error: null };
-            } else if (table === "topics") {
-              const updated = localStore.updateTopic(id, patch as never);
-              return { data: updated, error: null };
-            } else if (table === "mcqs") {
-              const updated = localStore.updateMcq(id, patch as never);
-              return { data: updated, error: null };
-            } else if (table === "sources") {
-              const updated = localStore.updateSource(id, patch as never);
-              return { data: updated, error: null };
-            } else if (table === "study_plan_slots") {
-              const updated = localStore.updatePlanSlot(id, patch as never);
-              return { data: updated, error: null };
-            } else if (table === "notes") {
-              const updated = localStore.updateNote(id, patch as never);
-              return { data: updated, error: null };
-            } else if (table === "review_schedules") {
-              const updated = localStore.updateReviewSchedule(id, patch as never);
-              return { data: updated, error: null };
-            }
+        if (column === "id" || column === "user_id") {
+          const id = String(value);
+          if (table === "profiles") {
+            const updated = localStore.updateProfile(patch);
+            return { data: updated, error: null };
+          } else if (table === "subjects") {
+            const updated = localStore.updateSubject(id, patch as never);
+            return { data: updated, error: null };
+          } else if (table === "chapters") {
+            const updated = localStore.updateChapter(id, patch as never);
+            return { data: updated, error: null };
+          } else if (table === "topics") {
+            const updated = localStore.updateTopic(id, patch as never);
+            return { data: updated, error: null };
+          } else if (table === "mcqs") {
+            const updated = localStore.updateMcq(id, patch as never);
+            return { data: updated, error: null };
+          } else if (table === "sources") {
+            const updated = localStore.updateSource(id, patch as never);
+            return { data: updated, error: null };
+          } else if (table === "study_plan_slots") {
+            const updated = localStore.updatePlanSlot(id, patch as never);
+            return { data: updated, error: null };
+          } else if (table === "notes") {
+            const updated = localStore.updateNote(id, patch as never);
+            return { data: updated, error: null };
+          } else if (table === "review_schedules") {
+            const updated = localStore.updateReviewSchedule(id, patch as never);
+            return { data: updated, error: null };
           }
-          return { data: null, error: null };
+        }
+        return { data: null, error: null };
       };
       return {
         eq: (column: string, value: unknown) => applyUpdate(column, value),
@@ -186,11 +188,14 @@ export function createLocalQueryBuilder(table: string): LocalQueryBuilder {
       const deleteFilters: Array<[string, unknown]> = [];
       const execute = () => {
         if (table === "exam_questions") {
-          const remaining = localStore.getExamQuestions().filter((row) =>
-            !deleteFilters.every(([key, value]) =>
-              String(row[key as keyof typeof row]) === String(value),
-            ),
-          );
+          const remaining = localStore
+            .getExamQuestions()
+            .filter(
+              (row) =>
+                !deleteFilters.every(
+                  ([key, value]) => String(row[key as keyof typeof row]) === String(value),
+                ),
+            );
           localStore.saveExamQuestions(remaining);
         } else {
           deleteFilters.forEach(([column, value]) => executeDelete(column, value));
