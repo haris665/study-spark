@@ -230,7 +230,9 @@ export function AiStudio() {
     }
 
     if (file && file.size > 18 * 1024 * 1024) {
-      toast.error("This file is too large for a reliable inline OCR scan. Please upload a PDF or image under 18 MB.");
+      toast.error(
+        "This file is too large for a reliable inline OCR scan. Please upload a PDF or image under 18 MB.",
+      );
       return;
     }
 
@@ -316,7 +318,11 @@ export function AiStudio() {
       setFile(null);
       setExtractText("");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Extraction failed. Please try again.");
+      toast.error(
+        e instanceof Error
+          ? e.message
+          : "AI extraction failed. Check that Gemini is configured and try again.",
+      );
     } finally {
       setBusy(false);
       setBusyMessage("");
@@ -456,7 +462,11 @@ export function AiStudio() {
         `Generated ${rows.length} ${isSimilarMode ? "similar" : "new"} question(s)! Review them below.`,
       );
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Generation failed.");
+      toast.error(
+        e instanceof Error
+          ? e.message
+          : "AI generation failed. Check that Gemini is configured and try again.",
+      );
     } finally {
       setBusy(false);
       setBusyMessage("");

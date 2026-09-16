@@ -110,6 +110,10 @@ const ScannerInput = z.object({
 // Standard official models (gemini-2.5-flash, gemini-2.5-flash-lite, gemini-2.5-pro)
 // avoid high demand 503 errors and ensure robust response reliability.
 const CANDIDATE_MODELS = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-2.5-pro"] as const;
+const GEMINI_KEY_MISSING_MESSAGE =
+  "AI question generation is not configured. Add GEMINI_API_KEY in Replit Secrets, then try again.";
+const GEMINI_GENERATION_FAILED_MESSAGE =
+  "Gemini could not generate draft questions from that content. Check the file and try again.";
 
 async function generateWithModelFallback(
   ai: GoogleGenAI,
@@ -628,18 +632,21 @@ function generateOfflineMcqs(
 export const generateMcqs = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => Input.parse(input))
   .handler(async ({ data }) => {
-    const apiKey = process.env["GEMINI_API_KEY"] || process.env["LOVABLE_API_KEY"];
+    const apiKey = process.env["GEMINI_API_KEY"];
 
-    if (apiKey) {
-      try {
-        const ai = new GoogleGenAI({ apiKey });
-        const contents: (string | { inlineData: { data: string; mimeType: string } })[] = [];
+    if (!apiKey) {
+      throw new Error(GEMINI_KEY_MISSING_MESSAGE);
+    }
 
-        let promptText = "";
+    try {
+      const ai = new GoogleGenAI({ apiKey });
+      const contents: (string | { inlineData: { data: string; mimeType: string } })[] = [];
 
-        if (data.mode === "extract") {
-          if (data.extractAll || data.kind === "pdf") {
-            promptText = `You are a precision educational document parser and master exam solver.
+      let promptText = "";
+
+      if (data.mode === "extract") {
+        if (data.extractAll || data.kind === "pdf") {
+          promptText = `You are a precision educational document parser and master exam solver.
 TASK: EXHAUSTIVE AND COMPLETE MCQ EXTRACTION.
 Extract EVERY SINGLE Multiple Choice Question (MCQ) that appears in the provided ${data.kind === "pdf" ? "PDF document across all pages" : data.kind === "image" ? "image (which may be a photo of a textbook page, exam paper, handwritten sheet, or screenshot)" : "material"}.
 DO NOT STOP EARLY. DO NOT SKIP ANY QUESTIONS.
@@ -657,8 +664,8 @@ EXTRACTION & QUALITY RULES:
 5. EDUCATIONAL EXPLANATIONS: Write a thorough, step-by-step educational solution for each question explaining why the correct choice is correct and highlighting why the alternative choices are distractors.
 6. DIFFICULTY & TAGS: Assess difficulty ("easy", "medium", "hard") and supply 2-3 topic tags.
 ${data.kind === "text" && data.text ? `\n\nDOCUMENT TEXT:\n${data.text.slice(0, 80000)}` : ""}`;
-          } else {
-            promptText = `You are a precision educational document parser${data.kind === "image" ? " and multimodal vision AI" : ""}.
+        } else {
+          promptText = `You are a precision educational document parser${data.kind === "image" ? " and multimodal vision AI" : ""}.
 TASK: Extract Multiple Choice Questions (MCQs) that appear in the supplied ${data.kind === "image" ? "image (photo, screenshot, or scan of an exam paper / textbook page)" : "document or text"}.
 Extract up to ${data.count || 20} MCQs found in the material.
 ${data.chapterName ? `Target Chapter: "${data.chapterName}"` : ""}
@@ -671,9 +678,9 @@ REQUIREMENTS:
 3. Write a thorough, step-by-step educational explanation explaining why the correct option is right.
 4. Set difficulty ("easy", "medium", or "hard") and relevant concept tags.
 ${data.kind === "text" && data.text ? `\n\nDOCUMENT TEXT:\n${data.text.slice(0, 50000)}` : ""}`;
-          }
-        } else if (data.mode === "similar" && data.referenceQuestion) {
-          promptText = `You are an elite exam question author.
+        }
+      } else if (data.mode === "similar" && data.referenceQuestion) {
+        promptText = `You are an elite exam question author.
 TASK: Create ${data.count} NEW, high-yield Multiple Choice Questions that are CONCEPTUALLY SIMILAR and parallel to this reference question:
 
 REFERENCE QUESTION:
@@ -688,87 +695,78 @@ REQUIREMENTS:
 2. Provide 4 plausible options for each question with exactly one clear correct answer.
 3. Provide a clear step-by-step solution and explanation.
 4. Tag each question with relevant concept tags.`;
-        } else {
-          promptText = `You are an expert exam author.
+      } else {
+        promptText = `You are an expert exam author.
 Create ${data.count} high-yield multiple choice questions ${
-            data.topic ? `focusing on "${data.topic}"` : ""
-          }${data.chapterName ? ` for chapter "${data.chapterName}"` : ""}${
-            data.subjectName ? ` in subject "${data.subjectName}"` : ""
-          }${
-            data.difficulty && data.difficulty !== "all"
-              ? ` with target difficulty "${data.difficulty}"`
-              : ""
-          } based on the supplied material.
+          data.topic ? `focusing on "${data.topic}"` : ""
+        }${data.chapterName ? ` for chapter "${data.chapterName}"` : ""}${
+          data.subjectName ? ` in subject "${data.subjectName}"` : ""
+        }${
+          data.difficulty && data.difficulty !== "all"
+            ? ` with target difficulty "${data.difficulty}"`
+            : ""
+        } based on the supplied material.
 
 ${data.kind === "text" && data.text ? `STUDY MATERIAL:\n${data.text.slice(0, 50000)}` : ""}`;
-        }
+      }
 
-        contents.push(promptText);
+      contents.push(promptText);
 
-        if (data.kind !== "text" && data.fileDataUrl) {
-          const commaIndex = data.fileDataUrl.indexOf(",");
-          const base64Data =
-            commaIndex !== -1 ? data.fileDataUrl.slice(commaIndex + 1) : data.fileDataUrl;
-          const header = commaIndex !== -1 ? data.fileDataUrl.slice(0, commaIndex) : "";
-          const mimeMatch = header.match(/data:([^;]+);/);
-          const mimeType = mimeMatch
-            ? mimeMatch[1]
-            : data.kind === "image"
-              ? "image/jpeg"
-              : "application/pdf";
+      if (data.kind !== "text" && data.fileDataUrl) {
+        const commaIndex = data.fileDataUrl.indexOf(",");
+        const base64Data =
+          commaIndex !== -1 ? data.fileDataUrl.slice(commaIndex + 1) : data.fileDataUrl;
+        const header = commaIndex !== -1 ? data.fileDataUrl.slice(0, commaIndex) : "";
+        const mimeMatch = header.match(/data:([^;]+);/);
+        const mimeType = mimeMatch
+          ? mimeMatch[1]
+          : data.kind === "image"
+            ? "image/jpeg"
+            : "application/pdf";
 
-          contents.push({
-            inlineData: {
-              data: base64Data,
-              mimeType,
-            },
-          });
-        }
-
-        const response = await generateWithModelFallback(ai, {
-          contents,
-          config: {
-            systemInstruction: SYSTEM_BASE,
-            responseMimeType: "application/json",
-            // Large document scans can contain many MCQs and explanations. Preserve the
-            // full review queue rather than truncating after the first page of results.
-            maxOutputTokens: data.mode === "extract" && data.extractAll ? 65536 : 32768,
+        contents.push({
+          inlineData: {
+            data: base64Data,
+            mimeType,
           },
         });
-
-        const raw = response.text || "{}";
-        let parsed: unknown;
-        try {
-          parsed = JSON.parse(raw);
-        } catch {
-          const match = raw.match(/\{[\s\S]*\}/);
-          parsed = match ? JSON.parse(match[0]) : { mcqs: [] };
-        }
-
-        const list = (parsed as { mcqs?: unknown[] })?.mcqs ?? [];
-        const mcqs = list
-          .map((item) => GeneratedMcq.safeParse(cleanMcqCandidate(item)))
-          .filter((r): r is { success: true; data: GeneratedMcq } => r.success)
-          .map((r) => r.data);
-
-        if (mcqs.length > 0) {
-          return { mcqs };
-        }
-      } catch (err) {
-        console.warn("[AI Functions] Gemini API error, falling back to local generator:", err);
       }
+
+      const response = await generateWithModelFallback(ai, {
+        contents,
+        config: {
+          systemInstruction: SYSTEM_BASE,
+          responseMimeType: "application/json",
+          // Large document scans can contain many MCQs and explanations. Preserve the
+          // full review queue rather than truncating after the first page of results.
+          maxOutputTokens: data.mode === "extract" && data.extractAll ? 65536 : 32768,
+        },
+      });
+
+      const raw = response.text || "{}";
+      let parsed: unknown;
+      try {
+        parsed = JSON.parse(raw);
+      } catch {
+        const match = raw.match(/\{[\s\S]*\}/);
+        parsed = match ? JSON.parse(match[0]) : { mcqs: [] };
+      }
+
+      const list = (parsed as { mcqs?: unknown[] })?.mcqs ?? [];
+      const mcqs = list
+        .map((item) => GeneratedMcq.safeParse(cleanMcqCandidate(item)))
+        .filter((r): r is { success: true; data: GeneratedMcq } => r.success)
+        .map((r) => r.data);
+
+      if (mcqs.length > 0) {
+        return { mcqs };
+      }
+    } catch (err) {
+      console.warn("[AI Functions] Gemini API error:", err);
+      throw new Error(GEMINI_GENERATION_FAILED_MESSAGE);
     }
 
-    // Offline / Standalone generator fallback
-    const offlineMcqs = generateOfflineMcqs(
-      data.topic,
-      data.text,
-      data.count,
-      data.mode,
-      data.referenceQuestion,
-      data.chapterName,
-    );
-    return { mcqs: offlineMcqs };
+    throw new Error(GEMINI_GENERATION_FAILED_MESSAGE);
   });
 
 const ParsePdfInput = z.object({
